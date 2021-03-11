@@ -5,10 +5,13 @@ import dash_html_components as html
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv')
+#df = pd.read_csv('https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv')
 regioni = pd.read_csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
-#regioni = regioni[regioni['denominazione_regione']=='Lombardia']
+df = regioni[regioni['denominazione_regione']=='Sicilia']
 #to see how many death every day--------------------------------------------------------------
+
+df.index = np.arange(0, len(df))
+
 
 n=0
 df['nuovi_deceduti'] = df['deceduti'][n]
@@ -49,7 +52,7 @@ def get_options(regioni):
 
 app.layout = html.Div([
 
-    html.H1("Covid-19-Italy",
+    html.H1("Covid-19-Sicily",
             style={
                 'textAlign': 'center',
                 'color': '#008080'
@@ -82,8 +85,6 @@ app.layout = html.Div([
         }
 
     ),
-
-
     dcc.Graph(
         id='deaths',
         figure={
@@ -105,6 +106,15 @@ app.layout = html.Div([
         }
 
     ),
+dcc.Slider(
+        id='year-slider',
+        min=positivi.index.min(),
+        max=positivi.index.max(),
+        value=positivi.index.min(),
+        marks={str(day): str(day) for day in positivi.index.unique()},
+        step=None
+    ),
+
     html.Div(className='div-for-dropdown',
              children=[
                  dcc.Dropdown(id='regionselector',
@@ -122,10 +132,17 @@ app.layout = html.Div([
             style={
                 'textAlign': 'center',
                 'color': '#008080'
-            })
-
+            }),
+html.Div(id='output')
 
 ])
+
+@app.callback(Output('output', 'children'),
+              Input('regionselector', 'value'))
+def update_output_1(value):
+    # Safely reassign the filter to a new variable
+    filtered_df = positivi[positivi.values == value]
+    return len(filtered_df)
 
 if __name__ == '__main__':
     app.run_server(port=4050)

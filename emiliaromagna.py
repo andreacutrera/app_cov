@@ -5,10 +5,13 @@ import dash_html_components as html
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv')
+#df = pd.read_csv('https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-andamento-nazionale/dpc-covid19-ita-andamento-nazionale.csv')
 regioni = pd.read_csv("https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-regioni/dpc-covid19-ita-regioni.csv")
-#regioni = regioni[regioni['denominazione_regione']=='Lombardia']
+df = regioni[regioni['denominazione_regione']=='Emilia-Romagna']
 #to see how many death every day--------------------------------------------------------------
+
+df.index = np.arange(0, len(df))
+
 
 n=0
 df['nuovi_deceduti'] = df['deceduti'][n]
@@ -49,7 +52,7 @@ def get_options(regioni):
 
 app.layout = html.Div([
 
-    html.H1("Covid-19-Italy",
+    html.H1("Covid-19-Emilia-Romagna",
             style={
                 'textAlign': 'center',
                 'color': '#008080'
@@ -82,8 +85,6 @@ app.layout = html.Div([
         }
 
     ),
-
-
     dcc.Graph(
         id='deaths',
         figure={
